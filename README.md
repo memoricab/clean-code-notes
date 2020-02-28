@@ -126,7 +126,7 @@ Beware of using lower case <code>L</code> and upper-case <code>O</code>.
 If names must be different, then they should also mean something diferrent.
 
 
-<code>(a1, a2, .. aN)</code> are non-informative. they provide not clue about the intention of author. 
+<code>(a1, a2, .. aN)</code> are non-informative. They provide no clue about intention of the author. 
 
 
 ```java
