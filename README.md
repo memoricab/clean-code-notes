@@ -55,7 +55,7 @@ Always leave the campground cleaner than you found it. The Boy Scout Rule. Leave
 
 # <a name="meaningfulnames"> 2. Meaningful Names</a>
 
-<b>Use intention-Revealing Names</b>
+## Use intention-Revealing Names
 
 Name should tell why it exists, what it does, how it is used. If name requires comment it is bad naming.
 
@@ -107,7 +107,8 @@ public List<Cell> getFlaggedCells() {
  }
 ```
 <hr/>
-<b>Avoid Disinformation</b>
+
+## Avoid Disinformation
 
 Avoid leaving false clues when naming like hp, aix, sco. They're the name of Unix plaforms or variants. 
 
@@ -121,7 +122,7 @@ Beware of using lower case <code>L</code> and upper-case <code>O</code>.
 
 <hr/>
 
-<b>Make Meaningful Distinctions</b>
+## Make Meaningful Distinctions
 
 If names must be different, then they should also mean something diferrent.
 
@@ -166,7 +167,7 @@ Beware of indistinguishable namings. <code>customer</code> is indistinguishable 
 
 <hr/>
 
-<b>User Pronounceable Names</b>
+## User Pronounceable Names
 
 <code>gnymdhms</code> (generation date, year, month, day, hour, minute, second) 
 
@@ -189,4 +190,104 @@ class Customer {
 ```
 <i>There is a funny joke in the book at this part, check it out :D</i>
 
-<b>Use Searchable Names</b>
+## Use Searchable Names
+
+Don't use single-letter names, it is hard to search them. Mike's personal preference is using single-letters <b>only</b> as local variables inside short methods. <b>The lenght of a name should correspond to the size of its scope.</b>
+
+It is imperative to give search-friendly names to constants if they are used in body of code many times.
+
+Compare,
+```java
+for (int j=0; j<34; j++) {
+   s += (t[j]*4)/5;
+}
+```
+
+to
+
+```java
+int realDaysPerIdealDay = 4;
+const int WORK_DAYS_PER_WEEK = 5;
+int sum = 0;
+   for (int j=0; j < NUMBER_OF_TASKS; j++) {
+      int realTaskDays = taskEstimate[j] * realDaysPerIdealDay;
+      int realTaskWeeks = (realdays / WORK_DAYS_PER_WEEK);
+      sum += realTaskWeeks;
+   }
+```
+
+Although <code>sum</code> is not particularly useful name it is easy to search. Good naming makes the function longer but at least it is very easy to search for constants. 
+
+## Avoid Encodings
+
+Encoding type or scope information to names just adds an extra burden to other programmers. And encoded names are seldom pronunceable and are easy to mis-type.
+
+<b>Hungarian Notation</b>
+
+Java programmers don't need type encoding. HN and other forms of type encoding are simply impediments. When using them it is very hard to change the name or type of a variable, function, or class. They make it harder to read the code. They can mislead the reader.
+
+```java
+PhoneNumber phoneString;
+// name not changed when type changed!
+```
+<b>Member Prefixes</b>
+
+There is no need to prefix member variables with <code>m_</code>. Classes and functions should be small enough that we don't need them. We should use editing environments that highlights members to make them distinct.
+
+```java
+public class Part {
+   private String m_dsc; // The textual description
+   void setName(String name) {
+   m_dsc = name;
+   }
+}
+```
+<hr/>
+
+```java
+public class Part {
+   String description;
+   void setDescription(String description) {
+   this.description = description;
+   }
+}
+```
+
+<b>Interfaces and Implementations</b>
+
+Leave the interfaces unadorned. Not <code>IShapeFactory</code> but <code>ShapeFactory</code>.
+If we must encode either the interface or the implementation, ecnoding the implementation would be better choice. E.g <code>ShapeFactoryImp</code>.
+
+## Avoid Mental Mapping
+
+Readers should not have to translate namings into other names they already know. This problem refers to naming variables with single-letter. For example <code>i, j, k</code> (never l!). Reader must mentally map these single-letters to the actual concept. 
+Clarity is very important to be a professional programmer.
+
+## Class Names
+
+Classes and objects should have noun or noun phrase like <code>Customer</code>, <code>WikiPage</code>, <code>Account</code> and <code>AddressParse</code>. Avoid words like <code>Manager</code>, <code>Processor</code>, <code>Data</code>, <code>Info</code>. A class name should not be a verb.
+
+## Method Names
+
+Methods should have verb or verb phrase names like <code>postPayment</code>, <code>deletePage</code>. 
+Accessors, mutators and predicates should be prefixed with <code>get</code>, <code>set</code>, <code>is</code> according to the javabean standard.
+
+When constructors are overloaded, use static factory methods with names that describe the arguments.
+
+```java
+Complex fulcrumPoint = Complex.FromRealNumber(23.0);
+```
+is generally better than
+
+```java
+Complex fulcrumPoint = new Complex(23.0);
+```
+Enforcing ther use by making the corresponding constructors private.
+
+## Don't Be Cute
+
+>Say what you mean. Mean what you say.
+
+No need to make jokes on naming.
+
+
