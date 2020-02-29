@@ -1,4 +1,4 @@
-#### My notes from R.C. Martin's Clean Code book 
+#### My notes from Robert Cecil Martin's Clean Code book 
 # 
 
 # Contents
@@ -192,7 +192,7 @@ class Customer {
 
 ## Use Searchable Names
 
-Don't use single-letter names, it is hard to search them. Mike's personal preference is using single-letters <b>only</b> as local variables inside short methods. <b>The lenght of a name should correspond to the size of its scope.</b>
+Don't use single-letter names, it is hard to search them. Robert's personal preference is using single-letters <b>only</b> as local variables inside short methods. <b>The lenght of a name should correspond to the size of its scope.</b>
 
 It is imperative to give search-friendly names to constants if they are used in body of code many times.
 
