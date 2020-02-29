@@ -181,7 +181,7 @@ Pronunciation is very hard, unmeaningful and silly for above namings. Just makes
 
 
 ```java
-class DtaRcrd102 {
+class Customer {
    private Date generationTimeStamp;
    private Date modificationTimeStamp;
    private final String recordId = "102";
@@ -189,45 +189,4 @@ class DtaRcrd102 {
 ```
 <i>There is a funny joke in the book at this part, check it out :D</i>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<b>Use Searchable Names</b>
