@@ -290,4 +290,109 @@ Enforcing ther use by making the corresponding constructors private.
 
 No need to make jokes on naming.
 
+## Pick One Word per Concept
 
+It is confusing to use <code>fetch</code>, <code>retrieve</code> and <code>get</code> as equivalent methods of different classes. 
+
+The function names should be consistent and have to stand alone. Having a <code>controller</code>, <code>manager</code>, <code>driver</code> in the same code base is confusing. What is the essential difference between them? Name can lead programmers to think these methods expect or return different type of objects. Consistency on naming is important for programmers who must use our code.
+
+## Don't Pun
+
+Avoid using the same word for more than one purpose. Using the same term form other ideas is a pun. According to <code>one word per concept</code> rule we could end up many classes have an <code>add</code> method. As long as the parameter lists and return values of methods are sementically equivalent there is no problem. 
+
+Let's say we have already had an <code>add</code> method which concantenates 2 parameters. If we are just writing a method to adding a simple parameter to a collection we should use <code>append</code> or <code>insert</code> instead of <code>add</code>. Because using <code>add</code> in this case would be a pun.
+
+We want to make ourselves clear while writing a code that readers can easily understand and don't find themselves in an intense study.
+
+## Use Solution Domain Names
+
+It is encouraged to use CS terms, algorithm names, pattern names, mat terms etc. It might be a problem using problem domain in everywhere which could cause to make co-workers' tasks harder. <code>AccountVisitor</code>, <code>JobQueue</code> etc they are all technical names and usually the most appropriate course.
+
+## Use Problem Domain Names
+
+Seperating solution and problem domain concepts is a very important part of being a good programmer and designer. Problem domain concepts related names should be drawn from the problem domain.
+
+## Add Meaningful Context
+
+It is obvious that <code>firstName</code>, <code>lastName</code>, <code>street</code>, <code>houseNumber</code>, <code>city</code>, <code>state</code>, <code>zipCode</code> values form an address. But can we infer that <code>state </code> belongs to address when it is alone in the code? We can add <code>addr</code> prefix to these names to make a clear and meaningful context. Then readers will understand these variables belongs to a bigger concept. The better solution is to create a class named <code>Address</code>. 
+
+<hr/>
+
+Below code has 3 variables but context must be inferred. When we look at the method it is very big the meanings of the variables are opaque. 
+
+```java
+private void printGuessStatistics(char candidate, int count) {
+   String number;
+   String verb;
+   String pluralModifier;
+   if (count == 0) {
+      number = "no";
+      verb = "are";
+      pluralModifier = "s";
+   } else if (count == 1) {
+      number = "1";
+      verb = "is";
+      pluralModifier = "";
+   } else {
+      number = Integer.toString(count);
+      verb = "are";
+      pluralModifier = "s";
+   }
+   String guessMessage = String.format(
+   "There %s %s %s%s", verb, number, candidate, pluralModifier
+   );
+   print(guessMessage);
+}
+```
+If we split the function into smaller pieces we would have a clear context for the three variables. They are definitively belongs to the <code>GuessStatisticsMessage</code> class. The improvement of context allows the algorithm more clean and clear by breaking it into many smaller functions.
+
+```java
+public class GuessStatisticsMessage {
+   private String number;
+   private String verb;
+   private String pluralModifier;
+   
+   public String make(char candidate, int count) {
+      createPluralDependentMessageParts(count);
+      return String.format(
+         "There %s %s %s%s",
+         verb, number, candidate, pluralModifier );
+   }
+
+   private void createPluralDependentMessageParts(int count) {
+      if (count == 0) {
+         thereAreNoLetters();
+      } else if (count == 1) {
+         thereIsOneLetter();
+      } else {
+         thereAreManyLetters(count);
+      }
+   } 
+
+   private void thereAreManyLetters(int count) {
+      number = Integer.toString(count);
+      verb = "are";
+      pluralModifier = "s";
+   }
+
+   private void thereIsOneLetter() {
+      number = "1";
+      verb = "is";
+      pluralModifier = "";
+   }
+
+   private void thereAreNoLetters() {
+      number = "no";
+      verb = "are";
+      pluralModifier = "s";
+   }
+}
+```
+
+## Don't Add Gratuitous Context
+
+Let's suppose there is an application called "Gas Station Deluxe", it is bad to prefix every class with <code>GSD</code>. Shorter names are generally better than longer ones as they are clear. There is no need to add more context to a name than is necessary. <code>Address</code> is fine for a class name and instances can be <code>accountAddress</code> and <code>customerAddress</code>.  
+
+
+## Final Words
+Choosing good names is a teaching issue rather than technical or business or management. It requires a shared cultural background. We don't need to be afraid when refactoring someone else's code as there are various editor tools to help us. These improvements will pay off in the short and long run. 
