@@ -400,7 +400,7 @@ Let's suppose there is an application called "Gas Station Deluxe", it is bad to 
 Choosing good names is a teaching issue rather than technical or business or management. It requires a shared cultural background. We don't need to be afraid when refactoring someone else's code as there are various editor tools to help us. These improvements will pay off in the short and long run. 
 
 
-# <a name="cleancode">3. Functions</a>
+# <a name="functions">3. Functions</a>
 
 Below function is too long. It has duplicated code, lots of odd strings and many strange- inobvious data types and APIS.  
 
