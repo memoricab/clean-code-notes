@@ -6,6 +6,8 @@
    [Introduction](#introduction)
 1. [Clean Code](#cleancode)
 2. [Meaningful Names](#meaningfulnames)
+3. [Functions](#functions)
+
 
 # <a name="introduction"> Introduction</a>
 
@@ -396,3 +398,172 @@ Let's suppose there is an application called "Gas Station Deluxe", it is bad to 
 
 ## Final Words
 Choosing good names is a teaching issue rather than technical or business or management. It requires a shared cultural background. We don't need to be afraid when refactoring someone else's code as there are various editor tools to help us. These improvements will pay off in the short and long run. 
+
+
+# <a name="cleancode">3. Functions</a>
+
+Below function is too long. It has duplicated code, lots of odd strings and many strange- inobvious data types and APIS.  
+
+
+
+```java
+public static void testableHtml(
+   PageData pageData,
+   boolean includeSuiteSetup
+) throws Exception {
+   WikiPage wikiPage = pageData.getWikiPage();
+   StringBuffer buffer = new StringBuffer();
+   if (pageData.hasAttribute("Test")) {
+       if (includeSuiteSetup) {
+           WikiPage suiteSetup =
+                   PageCrawlerImpl.getInheritedPage(
+                           SuiteResponder.SUITE_SETUP_NAME, wikiPage
+                   );
+           if (suiteSetup != null) {
+               WikiPagePath pagePath =
+                       suiteSetup.getPageCrawler().getFullPath(suiteSetup);
+               String pagePathName = PathParser.render(pagePath);
+               buffer.append("!include -setup .")
+                       .append(pagePathName)
+                       .append("\n");
+           }
+       }
+       WikiPage setup =
+               PageCrawlerImpl.getInheritedPage("SetUp", wikiPage);
+       if (setup != null) {
+           WikiPagePath setupPath =
+                   wikiPage.getPageCrawler().getFullPath(setup);
+           String setupPathName = PathParser.render(setupPath);
+           buffer.append("!include -setup .")
+                   .append(setupPathName)
+                   .append("\n");
+       }
+   }
+   buffer.append(pageData.getContent());
+   if (pageData.hasAttribute("Test")) {
+       WikiPage teardown =
+               PageCrawlerImpl.getInheritedPage("TearDown", wikiPage);
+       if (teardown != null) {
+           WikiPagePath tearDownPath =
+                   wikiPage.getPageCrawler().getFullPath(teardown);
+           String tearDownPathName = PathParser.render(tearDownPath);
+           buffer.append("\n")
+                   .append("!include -teardown .")
+                   .append(tearDownPathName)
+                   .append("\n");
+       }
+       if (includeSuiteSetup) {
+           WikiPage suiteTeardown =
+                   PageCrawlerImpl.getInheritedPage(
+                           SuiteResponder.SUITE_TEARDOWN_NAME,
+                           wikiPage
+                   );
+           if (suiteTeardown != null) {
+               WikiPagePath pagePath =
+                       suiteTeardown.getPageCrawler().getFullPath(suiteTeardown);
+               String pagePathName = PathParser.render(pagePath);
+               buffer.append("!include -teardown .")
+                       .append(pagePathName)
+                       .append("\n");
+           }
+       }
+   }
+   pageData.setContent(buffer.toString());
+   return pageData.getHtml();
+}
+```
+
+With just a few simple method extractions, some renaming and a little restructuring it is possible to capture the intent of the function.
+
+
+```java
+public static String renderPageWithSetupsAndTeardowns(
+   PageData pageData, boolean isSuite
+) throws Exception {
+   boolean isTestPage = pageData.hasAttribute("Test");
+   if (isTestPage) {
+       WikiPage testPage = pageData.getWikiPage();
+       StringBuffer newPageContent = new StringBuffer();
+       includeSetupPages(testPage, newPageContent, isSuite);
+       newPageContent.append(pageData.getContent());
+       includeTeardownPages(testPage, newPageContent, isSuite);
+       pageData.setContent(newPageContent.toString());
+   }
+   return pageData.getHtml();
+}
+```
+
+What is it that makes a function like above? How can we make a function communicate its intent?
+
+## Small!
+
+Functions should be small. Functions should be very small. Functions should hardly ever be 20 lines long. 
+
+Above code should still be shortened as below. 
+
+```java
+public static String renderPageWithSetupsAndTeardowns(
+   PageData pageData, boolean isSuite) throws Exception {
+   if (isTestPage(pageData))
+      includeSetupAndTeardownPages(pageData, isSuite);
+   return pageData.getHtml();
+}
+```
+
+<b>Blocks and Indenting</b>
+
+Blocks within if <code>if</code>, <code>else</code>, <code>while</code> and so on should be one line long. It adds documentary value in addition to keeping the enclosing function small because the function called can have a nicely descriptive name.
+
+This also implies functions should not be large enough to hold nested structures. Therefore indent level of a function should not be greater than one or two. This makes the functions easier to read and understand.
+
+## Do One Thing
+
+First code does a lot of things. Creating buffers, fetching pages, rendering paths, generating HTML and so on. But last code is doing one simple thing. <b>Functions should do one thing. They should do it well. They should do it only.</b>
+
+But there is a problem that actually the last code does "one thing". 
+
+It is doing:
+
+1. Determining whether the page is a test page.
+2. If so, including setups and teardowns.
+3. Rendering the page in HTML.
+
+So is the function doing one thing or three things? Three steps of the function are one level of abstraction below the stated name of the function. 
+We can describe it as a brief TO: 
+
+<i>TO RenderPageWithSetupsAndTeardowns, we check to see whether the page is a test page
+and if so, we include the setups and teardowns. In either case we render the page in
+HTML.</i>
+
+If the function does only steps that are one level below the stated name of the function, then it is doing one thing. We write functions to decompose a larger concept into a set of steps at the next level of abstraction.
+
+We could extract the <code>if</code> statement to function <code>includeSetupsAndTeardownsIfTestPage</code>, but that restates the code without changing the level of abstraction.
+
+Functions that do one thing cannot be reasonably divided into sections.
+
+## One Level of Abstraction Per Function 
+
+We need to make sure all statements within our function must be at the same level of abstraction. 
+
+First code includes different level of abstractions. <code>.getHtml();</code> is high level abstraction, <code>String pagePathName = PathParser.render(pagePath);</code> is intermediate level abstraction and <code>.append("\n")</code> is low level abstraction. In this case readers may have some problems with essential concept or a detail.
+
+ <b>Reading Code from top top Bottom: The Stepdown Rule </b>
+
+ <i>We want the code to read like a top-down narrative.</i> Every function must be followed by those at the next level of abstraction so that we can read the program. In other words we want to be able to read the program as it were a set of TO paragraphs. Each of them should describe the current level of abstraction and refer to next level down. 
+
+ ```
+ To include the setups and teardowns, we include setups, then we include the test page content, and then we include the teardowns.
+
+   To include the setups, we include the suite setup if this is a suite, then we includethe
+   regular setup.
+
+   To include the suite setup, we search the parent hierarchy for the “SuiteSetUp” page
+   and add an include statement with the path of that page.
+
+   To search the parent...
+ ```
+ </code>
+
+This rule is key to keep functions short and making them to do "one thing." 
+
+
