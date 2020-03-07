@@ -566,4 +566,109 @@ First code includes different level of abstractions. <code>.getHtml();</code> is
 
 This rule is key to keep functions short and making them to do "one thing." 
 
+## Switch Statements
+
+Switch statements generally don't do one thing. We can bury switch statements in a low level class with polymorphism to make them not repeat.
+
+```java
+public Money calculatePay(Employee e)
+throws InvalidEmployeeType {
+   switch (e.type) {
+      case COMMISSIONED:
+         return calculateCommissionedPay(e);
+      case HOURLY:
+         return calculateHourlyPay(e);
+      case SALARIED:
+         return calculateSalariedPay(e);
+      default:
+         throw new InvalidEmployeeType(e.type);
+   }
+}
+```
+Above function is large and it may grow if there are new types of employee. It violates SRP and OCP. 
+
+The solution to this problem is creating an abstract factory and hide details of implementation. Factory will create derivatives of <code>Employee</code> based on their type.
+
+```java
+public abstract class Employee {
+   public abstract boolean isPayday();
+   public abstract Money calculatePay();
+   public abstract void deliverPay(Money pay);
+}
+-----------------
+public interface EmployeeFactory {
+   public Employee makeEmployee(EmployeeRecord r) throws InvalidEmployeeType;
+}
+-----------------
+public class EmployeeFactoryImpl implements EmployeeFactory {
+   public Employee makeEmployee(EmployeeRecord r) throws InvalidEmployeeType {
+      switch (r.type) {
+         case COMMISSIONED:
+            return new CommissionedEmployee(r) ;
+         case HOURLY:
+            return new HourlyEmployee(r);
+         case SALARIED:
+            return new SalariedEmploye(r);
+         default:
+            throw new InvalidEmployeeType(r.type);
+      }
+   }
+}
+```
+
+## Use Descriptive Names
+
+One principle is choosing good names for small functions that do one thing.
+The smaller and more focues a function is, the easier it is to choose a descriptive name.
+
+A long descriptive name is better than a short enigmatic name. A long name is also better than a long descriptive comment. 
+
+Use a naming convention that allows multiple words to be easily read and describe what function does.
+
+Choosing descriptive names will clarify the design of the module in your mind and help you to improve it.
+
+Consistency is important in names.
+
+## Function Arguments
+
+The ideal number of arguments for a function is zero, then one then two. More than three arguments requires very special justification. 
+
+Arguments are also harder from a testing point of view. Writing all test cases to ensure various combinations of arguments is very difficult. 
+
+Output arguments are harder to understand than input arguments.
+
+<b>Common Monadic Forms</b>
+
+There are two very common reasons to pass a single argument into a function. You may be
+asking a question about that argument, as in <code>boolean fileExists(“MyFile”)</code>. Or you may be
+operating on that argument, transforming it into something else and returning it. For
+example, <code>InputStream fileOpen(“MyFile”)</code> transforms a file name String into an
+InputStream return value. These two uses are what readers expect when they see a function. You should choose names that make the distinction clear, and always use the two
+forms in a consistent context.
+
+Try to avoid any monadic functions that don’t follow these forms, for example, <code>void
+includeSetupPageInto(StringBuffer pageText)</code>. 
+
+<b>Flag Arguments</b>
+
+Using flag arguments is terrible practice. It complicates the signature of the method.  This function also does one more than one thing. It does one thing if the flag is true and another if the flag is false!
+
+<code>render(boolean isSuite)</code> is bad practice. <code>renderForSuite()</code> and <code>renderForSingleTest()</code> is better. 
+
+<b>Dyadic Functions</b>
+
+A function with two arguments is harder to understand than a monadic function. For example, <code>writeField(name)</code> is easier to understand than <code>writeField(output-Stream, name)</code>. Though the meaning of both is clear, the first glides past the eye, easily depositing its
+meaning. The second requires a short pause until we learn to ignore the first parameter.
+And that, of course, eventually results in problems because we should never ignore any
+part of code. The parts we ignore are where the bugs will hide.
+
+Even obvious dyadic functions like <code>assertEquals(expected, actual)</code> are problematic.
+How many times have you put the actual where the expected should be? The two arguments have no natural ordering. The expected, actual ordering is a convention that
+requires practice to learn
+
+
+
+
+
+
 
