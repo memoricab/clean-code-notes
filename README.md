@@ -667,6 +667,79 @@ How many times have you put the actual where the expected should be? The two arg
 requires practice to learn
 
 
+<b>Triads</b>
+
+Triads aare significantly harder to understand than dyads.
+
+<b>Argument Objects</b>
+
+When a function seems to need more than two or three arguments, it is likely that some of
+those arguments ought to be wrapped into a class of their own. 
+
+```java
+Circle makeCircle(double x, double y, double radius);
+--
+Circle makeCircle(Point center, double radius);
+```
+
+
+
+
+<b>Argument Lists</b>
+
+Below method is dyadic. 
+```java
+public String format(String format, Object... args)
+```
+
+Same rules apply for the lists. Not more than 3 arguments. 
+
+<b>Verbs and Keywords</b>
+
+<code>write(name)</code> is evocative <code>writeField(name)</code> is even better. 
+
+<code>assertEquals</code> might be better written as <code>assertExpectedEqualsActual(expected, actual)</code>
+
+This helps to remember the ordering of the arguments.
+
+## Have No Side Effects
+
+Function promises to do one thing but it does other hidden things.
+
+
+<code>checkPassword</code> seems to do one thing but it also initializes the session. There is a side effect and this side effect creates temporal coupling. you want to be sure that is safe to initialize the session.
+```java
+public class UserValidator {
+   private Cryptographer cryptographer;
+   public boolean checkPassword(String userName, String password) {
+      User user = UserGateway.findByName(userName);
+      if (user != User.NULL) {
+         String codedPhrase = user.getPhraseEncodedByPassword();
+         String phrase = cryptographer.decrypt(codedPhrase, password);
+         if ("Valid Password".equals(phrase)) {
+            Session.initialize();
+            return true;
+         }
+      }
+      return false;
+   }
+}
+```
+If you must do temporal coupling change the name of the method as <code>checkPasswordAndInitializeSession</code>.
+
+
+<b>Output Arguments</b>
+
+<code>appendFooter(s);</code> 
+Does this function append s as the footer to something? Or does it append some footer
+to s? Is s an input or an output? It doesn’t take long to look at the function signature
+and see:
+<code>public void appendFooter(StringBuffer report)</code>
+
+Better,
+<code>report.appendFooter();</code>
+
+In general output arguments should be avoided. If function must change the state of something, it can change its owning object's state.
 
 
 
