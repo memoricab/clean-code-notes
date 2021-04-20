@@ -741,7 +741,64 @@ Better,
 
 In general output arguments should be avoided. If function must change the state of something, it can change its owning object's state.
 
+## Command Query Separation
+
+Functions either change the state of an object or return some informatio about that object. Not both at the same time.
+
+> PREFER EXCEPTIONS TO RETURNING ERROR CODES
 
 
+### Extract Try/Catch Blocks
 
+```java
+public void delete(Page page) {
+    try {
+        deletePageAndAllReferences(page);
+    } catch (Exception e) {
+        logError(e);
+    }
+}
+
+private void deletePageAndAllReferences(Page page) throws Exception {
+    deletePage(page);
+    registry.deleteReference(page.name);
+    configKeys.deleteKey(page.name.makeKey());
+}
+
+private void logError(Exception e) {
+    logger.log(e.getMessage());
+}
+```
+
+### Error handling is One Thing
+Error ahanding is a one thing, and functions should do one thing. Thus, a function handles errors should do nothing else. 
+
+
+### The <b>Error.java</b> Dependency Magnet 
+
+```java
+public enum Error {
+   OK,
+   INVALID,
+   NO_SUCH,
+   LOCKED,
+   OUT_OF_RESOURCES,
+   WAITING_FOR_EVENT;
+   }
+```
+
+Above class must be imported and used by other classes. Requires recompiling and redoploying. Instead use use exceptions. They can be extended so application of Open-Closed Principle. 
+
+### DON'T REPEAT YOURSELF
+
+Duplication is the evil of all evil in software. 
+
+### STRUCTURED PROGRAMMING
+Dijstra's rules of structured programming: One entry in to function and one exit from the function. No <code>break</code>, <code>countinue</code>  or <code>goto</code> statements.
+
+If we keep functions small return break or continue statements won't be harmful.
+
+### HOW DO YOU WRITE FUNCTIONS LIKE THIS?
+
+First draft is disorganizied and clumsy. Then massage the code, refine, restructure, split functions, change names, eliminate duplications, shrink methods, shrink classes, write good unit tests meanwhile.
 
