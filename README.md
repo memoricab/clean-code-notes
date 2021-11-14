@@ -7,6 +7,9 @@
 1. [Clean Code](#cleancode)
 2. [Meaningful Names](#meaningfulnames)
 3. [Functions](#functions)
+4. [Comments](#comments)
+5. [Formatting](#formatting)
+
 
 
 # <a name="introduction"> Introduction</a>
@@ -801,4 +804,63 @@ If we keep functions small return break or continue statements won't be harmful.
 ### HOW DO YOU WRITE FUNCTIONS LIKE THIS?
 
 First draft is disorganizied and clumsy. Then massage the code, refine, restructure, split functions, change names, eliminate duplications, shrink methods, shrink classes, write good unit tests meanwhile.
+
+# <a name="comments"> 4. Comments</a>
+If you find yourself to put comments you should check your code if you were able to express yourself with your code. You should not need comments in the first place.
+Truth can only be found in one place: the code. 
+
+### Comments Do Not Make Up for Bad Code
+Spend your time on cleaing your code, not adding comments to describe what your code does.
+### Explain Yourself in Code
+```java
+// Check to see if the employee is eligible for full benefits
+if ((employee.flags & HOURLY_FLAG) &&
+(employee.age > 65))
+```
+or
+```java
+if (employee.isEligibleForFullBenefits())
+```
+### Legal Comments
+Copyright and authorship statements are reasonable for each of source file.
+### Informative Comments
+```java
+// format matched kk:mm:ss EEE, MMM dd, yyyy
+Pattern timeMatcher = Pattern.compile(
+"\\d*:\\d*:\\d* \\w*, \\w* \\d*, \\d*");
+```
+Above comment might be useful to describe patterns, but still would be better if this code had been moved to another class that converted formats of dates and times
+
+### TODO Comments
+Whatever else is todo, there is no reason the leave a bad code in the system.
+
+### Don’t Use a Comment When You Can Use a Function or a Variable
+
+```java
+// does the module from the global list <mod> depend on the
+// subsystem we are part of?
+if (smodule.getDependSubsystems().contains(subSysMod.getSubSystem()))
+```
+Better:
+```java
+ArrayList moduleDependees = smodule.getDependSubsystems();
+String ourSubSystem = subSysMod.getSubSystem();
+if (moduleDependees.contains(ourSubSystem))
+```
+
+# <a name="formatting"> 5. Formatting</a>
+
+## Vertical Formatting
+#### The Newspaper Metaphor
+The name of the class should be self explanatory, like a newspaper article title.
+The topmost parts of source file should provide high-level concepts and algorithms. When you go vertically down on a source file, you should get more details about the source file. 
+#### Vertical Openness Between Concepts 
+A blank line betweeen concepts is a simple rule has a pro found effect on the visual layout of the code. 
+#### Dependent Functions
+If one function calls another, they should be vertically close,
+and the caller should be above the callee, if at all possible.
+
+
+
+
 
